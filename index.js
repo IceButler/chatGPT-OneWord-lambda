@@ -27,6 +27,8 @@ export const handler = async (event, context, callback) => {
       oneword = getOneWord(response.data.choices[0].text);
     else oneword = "none";
   }
+
+  callback(null, { oneword: oneword });
 };
 
 function getOneWord(text) {
