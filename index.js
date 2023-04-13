@@ -12,7 +12,7 @@ const openai = new OpenAIApi(configuration);
 
 app.use(bodyParser.json());
 
-export const handler = async (event, context, callback) => {
+exports.handler = async (event, context, callback) => {
   const { keyword } = event;
   const message = `'${keyword}'에서 대표 단어 한어절`;
   let oneword = "";
