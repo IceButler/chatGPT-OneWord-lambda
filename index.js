@@ -1,16 +1,15 @@
 const dotenv = require("dotenv");
-dotenv.config();
 const OpenAI = require("openai");
+const axios = require("axios");
+dotenv.config();
+
 const { Configuration, OpenAIApi } = OpenAI;
-const bodyParser = require("body-parser");
 
 const configuration = new Configuration({
   organization: process.env.ORGANIZATION,
   apiKey: process.env.API_KEY,
 });
 const openai = new OpenAIApi(configuration);
-
-app.use(bodyParser.json());
 
 exports.handler = async (event, context, callback) => {
   const { keyword } = event;
