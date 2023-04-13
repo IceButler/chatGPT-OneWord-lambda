@@ -23,8 +23,7 @@ export const handler = async (event, context, callback) => {
     temperature: 0,
   });
   if (response.data) {
-    if (response.data.choices)
-      oneword = getOneWord(response.data.choices[0].text);
+    if (response.data.choices) oneword = response.data.choices[0].text;
     else oneword = "none";
   }
 
