@@ -13,26 +13,27 @@ const openai = new OpenAIApi(configuration);
 
 exports.handler = async (event, context, callback) => {
   const { keyword } = event;
-  const message = `'${keyword}'에서 대표 단어 한어절`;
-  let oneword = "";
+  const message = `'${keyword}' is food name. Pick keyword up to 3 at '${keyword}', except special character and number. And every word should be a food. You should tell me in Korean and follow this rule, "#word"(one word), "#word#word"(two words), "#word#word#word"(three words).`;
+  let answer = "";
+  let answers = [];
   const response = await openai.createCompletion({
     model: "text-davinci-003",
     prompt: message,
-    max_tokens: 4000,
     temperature: 0,
+    max_tokens: 700,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0,
   });
-  if (response.data) {
-    if (response.data.choices) oneword = response.data.choices[0].text;
-    else oneword = "none";
+
+  if (response.data.choices) {
+    if (response.data.choices) answer = response.data.choices[0].text;
+    else answer = null;
+  }
+  if (answer != null) {
+    answers = answer.split("#");
+    answers.shift();
   }
 
-  callback(null, { oneword: oneword });
+  callback(null, { words: answers });
 };
-
-function getOneWord(text) {
-  if (text) {
-    let startIndex = text.indexOf('"');
-    let lastIndex = text.lastIndexOf('"');
-    return text.substring(startIndex + 1, lastIndex);
-  }
-}
