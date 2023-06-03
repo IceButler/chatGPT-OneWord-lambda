@@ -13,27 +13,29 @@ const openai = new OpenAIApi(configuration);
 
 exports.handler = async (event, context, callback) => {
   const { keyword } = event;
-  const message = `'${keyword}' is food name. Pick keyword up to 3 at '${keyword}', except special character and number. And every word should be a food. You should tell me in Korean and follow this rule, "#word"(one word), "#word#word"(two words), "#word#word#word"(three words).`;
+  const message = `Tell me in one word what kind of food '${keyword}' is and what the food name of '${keyword}' is. You should tell me in only Korean, Don't ever speak English and follow this rule, {word**word}`;
   let answer = "";
   let answers = [];
-  const response = await openai.createCompletion({
-    model: "text-davinci-003",
-    prompt: message,
-    temperature: 0,
-    max_tokens: 700,
-    top_p: 1,
-    frequency_penalty: 0,
-    presence_penalty: 0,
-  });
 
-  if (response.data.choices) {
-    if (response.data.choices) answer = response.data.choices[0].text;
-    else answer = null;
-  }
-  if (answer != null) {
-    answers = answer.split("#");
-    answers.shift();
-  }
+  fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: message }],
+      temperature: 0,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.choices) answer = data.choices[0].message.content;
+      else answer = null;
 
-  callback(null, { words: answers });
+      if (answer != null) answers = answer.split("**");
+      callback(null, { words: answers });
+    }
+    );
 };
